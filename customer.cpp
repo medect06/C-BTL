@@ -1,145 +1,144 @@
 #include "customer.h"
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <sstream>
+using namespace std;
 
-void themKhachHang(vector<KhachHang>& danhSachKhachHang, const KhachHang& khachHangMoi) {
-    danhSachKhachHang.push_back(khachHangMoi);
+// Định nghĩa các phương thức của lớp KhachHang
+void KhachHang::chuanHoa() {
+    tenKhachHang.clear();
+    soDienThoai.clear();
+    diemTichLuy = 0;
 }
 
-void xemDanhSachKhachHang(const vector<KhachHang>& danhSachKhachHang) {
-    for (const auto& kh : danhSachKhachHang) {
-        cout << "Ten: " << kh.tenKhachHang << ", So Dien Thoai: " << kh.soDienThoai << ", Diem Tich Luy: " << kh.diemTichLuy << endl;
+void KhachHang::saoChep(const KhachHang &khachNguon) {
+    tenKhachHang = khachNguon.tenKhachHang;
+    soDienThoai = khachNguon.soDienThoai;
+    diemTichLuy = khachNguon.diemTichLuy;
+}
+
+void KhachHang::themNhieu(vector<KhachHang>& danhSach, const string &duongDan) {
+    ofstream fptr(duongDan, ios::app);
+    if (!fptr) {
+        cerr << "Không thể thêm khách hàng vào file\n";
+        return;
     }
-}
-
-void timKiemKhachHang(const vector<KhachHang>& danhSachKhachHang) {
-    string ten;
-    cout << "Nhap ten khach hang can tim: ";
-    getline(cin, ten);
-
-    for (const auto& kh : danhSachKhachHang) {
-        if (kh.tenKhachHang == ten) {
-            cout << "Ten: " << kh.tenKhachHang << ", So Dien Thoai: " << kh.soDienThoai << ", Diem Tich Luy: " << kh.diemTichLuy << endl;
-            return;
-        }
+    for (const auto& kh : danhSach) {
+        fptr << kh.tenKhachHang << "," << kh.soDienThoai << "," << kh.diemTichLuy << "\n";
     }
-
-    cout << "Khong tim thay khach hang nay." << endl;
+    fptr.close();
 }
 
-void xoaKhachHang(vector<KhachHang>& danhSachKhach, const KhachHang& khachXoa) {
-    for (auto it = danhSachKhach.begin(); it != danhSachKhach.end(); ++it) {
-        if (coNhuNhauKhachHang(*it, khachXoa)) {
-            danhSachKhach.erase(it);
-            return;
-        }
+int KhachHang::kiemTraSo(const string &duongDan) {
+    ifstream fptr(duongDan);
+    if (!fptr) {
+        cerr << "Không thể mở đường dẫn để kiểm tra số lượng khách hàng\n";
+        return -1;
     }
-}
-#include "customer.h"
-
-void nhapThongTinKhach(KhachHang& khachHang) {
-    cout << "Nhap ten khach hang: ";
-    getline(cin, khachHang.tenKhachHang);
-
-    cout << "Nhap so dien thoai: ";
-    getline(cin, khachHang.soDienThoai);
-
-    cout << "Nhap diem tich luy: ";
-    cin >> khachHang.diemTichLuy;
-    cin.ignore();
-}
-
-void nhapTenSDTKhach(KhachHang& khachHang) {
-    cout << "Nhap ten khach hang: ";
-    getline(cin, khachHang.tenKhachHang);
-
-    cout << "Nhap so dien thoai: ";
-    getline(cin, khachHang.soDienThoai);
-}
-
-void capNhatKhachTuMang(vector<KhachHang>& danhSach, const string& duongDan) {
-    docFileKhachHang(duongDan, danhSach);
-}
-
-void capNhatKhachTuFile(vector<KhachHang>& danhSach, const string& duongDan) {
-    docFileKhachHang(duongDan, danhSach);
-}
-#include "customer.h"
-
-void layDiemTichLuy(const vector<KhachHang>& danhSachKhachHang, KhachHang& khach) {
-    for (const auto& khachHienTai : danhSachKhachHang) {
-        if (khachHienTai.tenKhachHang == khach.tenKhachHang && khachHienTai.soDienThoai == khach.soDienThoai) {
-            khach.diemTichLuy = khachHienTai.diemTichLuy;
-            return;
-        }
-    }
-}
-
-void chuanHoaKhachHang(vector<KhachHang>& danhSachKhachHang) {
-    for (auto& kh : danhSachKhachHang) {
-        kh.diemTichLuy = max(0.0f, kh.diemTichLuy);
-    }
-}
-
-void saoChepKhachHang(KhachHang& khachNhan, const KhachHang& khachNguon) {
-    khachNhan.tenKhachHang = khachNguon.tenKhachHang;
-    khachNhan.soDienThoai = khachNguon.soDienThoai;
-    khachNhan.diemTichLuy = khachNguon.diemTichLuy;
-}
-
-int kiemTraSoKhachHang(const string& duongDan) {
-    ifstream file(duongDan);
-    if (!file.is_open()) return -1;
-
     int soKhachHang = 0;
+    fptr.ignore(10000, '\n');
     string line;
-    while (getline(file, line)) soKhachHang++;
-
-    file.close();
+    while (getline(fptr, line)) {
+        soKhachHang++;
+    }
+    fptr.close();
     return soKhachHang;
 }
 
-bool coNhuNhauKhachHang(const KhachHang& k1, const KhachHang& k2) {
-    return k1.tenKhachHang == k2.tenKhachHang && k1.soDienThoai == k2.soDienThoai;
+void KhachHang::docFile(const string &duongDan, vector<KhachHang>& danhSach) {
+    ifstream fptr(duongDan);
+    if (!fptr) {
+        cerr << "Không thể mở đường dẫn để kiểm tra số lượng khách hàng\n";
+        return;
+    }
+    string line;
+    fptr.ignore(10000, '\n');
+    danhSach.clear();
+    while (getline(fptr, line)) {
+        KhachHang kh;
+        istringstream iss(line);
+        string diemTichLuyStr;
+        getline(iss, kh.tenKhachHang, ',');
+        getline(iss, kh.soDienThoai, ',');
+        getline(iss, diemTichLuyStr);
+        kh.diemTichLuy = stof(diemTichLuyStr);
+        danhSach.push_back(kh);
+    }
+    fptr.close();
 }
-#include "customer.h"
-#include <fstream>
+void KhachHang::xoaKhachHang(vector<KhachHang>& danhSach, const KhachHang& khachXoa) {
+    auto it = find_if(danhSach.begin(), danhSach.end(), [&khachXoa](const KhachHang& kh) {
+        return kh.tenKhachHang == khachXoa.tenKhachHang && kh.soDienThoai == khachXoa.soDienThoai;
+    });
+    if (it != danhSach.end()) {
+        danhSach.erase(it);
+    }
 
-void docFileKhachHang(const string& duongDan, vector<KhachHang>& danhSachKhachHang) {
-    ifstream file(duongDan);
-    if (!file.is_open()) return;
+    ofstream fptr("output.txt", ios::out);
+    if (!fptr) {
+        cerr << "Không thể mở file để xóa khách hàng\n";
+        return;
+    }
+    for (const auto& kh : danhSach) {
+        fptr << kh.tenKhachHang << "," << kh.soDienThoai << "," << kh.diemTichLuy << "\n";
+    }
+    fptr.close();
+}
 
+void KhachHang::themKhachHangVaoFile(const string &duongDan, const KhachHang& khach) {
+    ofstream fptr(duongDan, ios::app);
+    if (!fptr) {
+        cerr << "Không thể thêm khách hàng vào file\n";
+        return;
+    }
+    fptr << kh.tenKhachHang << "," << kh.soDienThoai << "," << kh.diemTichLuy << "\n";
+    fptr.close();
+}
+
+void KhachHang::themNhieuKhachVaoFile(const vector<KhachHang>& danhSach, const string &duongDan) {
+    ofstream fptr(duongDan, ios::app);
+    if (!fptr) {
+        cerr << "Không thể thêm khách hàng vào file\n";
+        return;
+    }
+    for (const auto& kh : danhSach) {
+        fptr << kh.tenKhachHang << "," << kh.soDienThoai << "," << kh.diemTichLuy << "\n";
+    }
+    fptr.close();
+}
+
+void themKhachHang(vector<KhachHang>& danhSach, const KhachHang& khachHangMoi) {
+    danhSach.push_back(khachHangMoi);
+}
+
+void xemDanhSachKhachHang(const vector<KhachHang>& danhSach) {
+    for (const auto& kh : danhSach)
+        cout << "Tên: " << kh.tenKhachHang << ", Số Điện Thoại: " << kh.soDienThoai << ", Điểm Tích Lũy: " << kh.diemTichLuy << endl;
+}
+
+void timKiemKhachHang(const vector<KhachHang>& danhSach) {
+    string ten;
+    cout << "Nhập tên khách hàng cần tìm: ";
+    getline(cin, ten);
+    for (const auto& kh : danhSach) {
+        if (kh.tenKhachHang == ten) {
+            cout << "Tên: " << kh.tenKhachHang << ", Số Điện Thoại: " << kh.soDienThoai << ", Điểm Tích Lũy: " << kh.diemTichLuy << endl;
+            return;
+        }
+    }
+    cout << "Không tìm thấy khách hàng này." << endl;
+}
+
+void docFileKhachHang(const string& duongDan, vector<KhachHang>& danhSach) {
+    ifstream fptr(duongDan);
+    if (!fptr) {
+        cerr << "Không thể mở file để đọc danh sách khách hàng" << endl;
+        return;
+    }
     KhachHang kh;
-    while (file >> kh.tenKhachHang >> kh.soDienThoai >> kh.diemTichLuy) {
-        danhSachKhachHang.push_back(kh);
+    while (fptr >> kh.tenKhachHang >> kh.soDienThoai >> kh.diemTichLuy) {
+        danhSach.push_back(kh);
     }
-
-    file.close();
+    fptr.close();
 }
-
-void xoaKhachKhoiFile(const string& duongDan, const KhachHang& khachXoa) {
-    vector<KhachHang> danhSachKhachHang;
-    docFileKhachHang(duongDan, danhSachKhachHang);
-
-    xoaKhachHang(danhSachKhachHang, khachXoa);
-    ofstream outFile(duongDan, ofstream::trunc);
-
-    for (const auto& kh : danhSachKhachHang) {
-        outFile << kh.tenKhachHang << " " << kh.soDienThoai << " " << kh.diemTichLuy << endl;
-    }
-
-    outFile.close();
-}
-
-void themKhachHangVaoFile(const string& duongDan, const KhachHang& khach) {
-    ofstream file(duongDan, ios::app);
-    if (!file.is_open()) return;
-
-    file << kh.tenKhachHang << " " << kh.soDienThoai << " " << kh.diemTichLuy << endl;
-    file.close();
-}
-
-void themNhieuKhachVaoFile(const vector<KhachHang>& danhSachKhach, const string& duongDan) {
-    ofstream file(duongDan, ios::app);
-    if (!file.is_open()) return;
-
-    for (const auto& kh : danhSachKhach) {
-        file << kh.tenKhachHang << " " << kh.soDienThoai << " " << kh.diemTichLuy << endl;

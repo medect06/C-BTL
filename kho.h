@@ -1,44 +1,26 @@
 #pragma once
-#include "general.h"
 #include <vector>
 #include <string>
 using namespace std;
 
-// Class quản lý nguyên liệu
 class NguyenLieu {
 public:
-    string ten;
-    string donVi;  // kg, hộp, trái, gói
-    float soLuong;
-    float gia;  // Tính trên một đơn vị
-
-    NguyenLieu(const string& ten, const string& donVi, float soLuong, float gia);
-    NguyenLieu(const NguyenLieu& source);
-    bool coNhuNhau(const NguyenLieu& other) const;
-    void saoChepTu(const NguyenLieu& source);
-    void nhapThongTin();
+    char ten[DO_DAI_TEN];
+    char donVi[DO_DAI_DONVI];
+    float soLuong, gia;
+    void chuanHoa();                          //Cài đặt mặc định cho nguyên liệu, tránh giá trị rác
+    void saoChep(const NguyenLieu &nguyenLieuNguon);        //Sao chép thông tin từ nguyên liệu nguồn
+    static void themNhieu(vector<NguyenLieu>& danhSach, const string &duongDan); //Thêm nhiều nguyên liệu vào file
+    static int kiemTraSo(const string &duongDan);                       //Kiểm tra số lượng nguyên liệu trong file 
+    static void docFile(const string &duongDan, vector<NguyenLieu>& kho);  //Đọc dữ liệu từ file
+    static void xoaNguyenLieu(vector<NguyenLieu>& kho, const NguyenLieu& nlXoa); //Xóa nguyên liệu khỏi file
 };
 
-// Class quản lý kho
-class QuanLyKho {
-public:
-    vector<NguyenLieu> kho;
+// Chức năng liên quan tới vector<NguyenLieu>
+void themNguyenLieu(vector<NguyenLieu>& danhSach, 
+                   const NguyenLieu& nguyenLieuMoi);   //Thêm nguyên liệu vào danh sách
 
-    void chuanHoaKho();
-    void saoChepNguyenLieu(int indexNhan, int indexNguon);
-    void themNhieuNguyenLieuVaoFile(const string& duongDan);
-    int kiemTraSoNguyenLieu(const string& duongDan);
-    void docFileKho(const string& duongDan); 
-    void xoaNguyenLieuKhoiFile(int index, const string& duongDan);
-    void themNguyenLieuVaoFile(int index, const string& duongDan);
-    void hienThiKho();
-    void themNguyenLieu(const NguyenLieu& nguyenLieuMoi);
-    void xoaNguyenLieu(int index);
-    void layNguyenLieu(int index, int soMon);
-    void nhapTenNguyenLieu(int index);
-    void timKiemNguyenLieu();
-    void capNhatKhoTuFile(const string& duongDan);
-    void capNhatKhoTuMang(const string& duongDan);
-};
-
-#endif 
+void hienThiKho(const vector<NguyenLieu>& danhSach);             //Hiển thị danh sách nguyên liệu trong kho
+void layNguyenLieu(vector<NguyenLieu>& danhSach, 
+                   const NguyenLieu& nlSuDung, int soMon); //Lấy nguyên liệu từ kho để sử dụng
+void timKiemNguyenLieu(const vector<NguyenLieu>& danhSach);       //Tìm kiếm nguyên liệu trong kho
